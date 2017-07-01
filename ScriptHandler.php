@@ -1,6 +1,6 @@
 <?php
 
-namespace SlowProg\CopyFile;
+namespace Cinergix\CopyFile;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -14,13 +14,21 @@ class ScriptHandler
      */
     public static function copy(Event $event)
     {
+
         $extras = $event->getComposer()->getPackage()->getExtra();
 
-        if (!isset($extras['copy-file'])) {
-            throw new \InvalidArgumentException('The dirs or files needs to be configured through the extra.copy-file setting.');
-        }
+        $eventName = $event->getName();
 
-        $files = $extras['copy-file'];
+        $copyConfig = $extras['copy-config'];
+
+        if(isSet($copyConfig)){
+            $files = self::getFiles($copyConfig, $eventName);
+            if ( !isSet($files) ){
+              $files = $extras['copy-file'];
+            }
+        }else{
+          throw new \InvalidArgumentException('The dirs or files needs to be configured through the extra.copy-file setting or via a copy config file for the target event');
+        }
 
         if ($files === array_values($files)) {
             throw new \InvalidArgumentException('The extra.copy-file must be hash like "{<dir_or_file_from>: <dir_to>}".');
@@ -30,6 +38,7 @@ class ScriptHandler
         $io = $event->getIO();
 
         foreach ($files as $from => $to) {
+
             // Check the renaming of file for direct moving (file-to-file)
             $isRenameFile = substr($to, -1) != '/' && !is_dir($from);
 
@@ -78,5 +87,20 @@ class ScriptHandler
 
             $io->write(sprintf('Copied file(s) from <comment>%s</comment> to <comment>%s</comment>.', $from, $to));
         }
+    }
+
+    private static function getFiles($configFile, $eventName){
+
+      if( isSet( $configFile ) ){
+        include $configFile;
+        if ( isSet($copyFiles[$eventName]) ){
+          return $copyFiles[$eventName];
+        }else{
+          return;
+        }
+      }else {
+        throw new \InvalidArgumentException('The copy/deployment instruction file location needs to be configured through the extra.copy-config setting.');
+      }
+
     }
 }

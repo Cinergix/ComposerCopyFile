@@ -1,13 +1,13 @@
 {
-    "name": "slowprog/composer-copy-file",
-    "description": "Composer script copying your files after install",
-    "keywords": ["copy file"],
-    "homepage": "https://github.com/SlowProg/composer-copy-file",
+    "name": "cinergix/composer-copy-file",
+    "description": "Composer script copying files based on composer commands",
+    "keywords": ["copy file, deployment"],
+    "homepage": "https://github.com/Cinergix/ComposerCopyFile",
     "license": "MIT",
     "authors": [
         {
-            "name": "Andrey Tyshev",
-            "email": "slowprog@gmail.com"
+            "name": "Chandika Jayasundara",
+            "email": "chandika@gmail.com"
         }
     ],
     "require": {
@@ -21,6 +21,6 @@
         "mikey179/vfsStream": "~1"
     },
     "autoload": {
-        "psr-4": { "SlowProg\\CopyFile\\": "" }
+        "psr-4": { "Cinergix\\CopyFile\\": "" }
     }
 }
